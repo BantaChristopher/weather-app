@@ -1,6 +1,7 @@
 var inputCity = '';
 var currentDate = dayjs().format("(MM/DD/YYYY)");
 $('#todaysDate').text(currentDate)
+var previousCity = []
 
 function getCords(url) {
     fetch(url)
@@ -21,10 +22,9 @@ function getCords(url) {
                     return response.json()
                 })
                 .then(function (data) {
-                    console.log(data)
                     var weatherIcon = data.current.weather[0].icon;
                     var iconUrl = "http://openweathermap.org/img/w/" + weatherIcon + ".png";
-                    $('#wicon').attr('src', iconUrl)
+                    $('#currentIcon').attr('src', iconUrl)
                     $('#cityName').text(inputCity + ' ' + currentDate)
                     $('#cityTemp').text('Temperature: ' + data.current.temp + '℉')
                     $('#cityWind').text('Wind: ' + data.current.wind_speed + 'MPH')
@@ -39,7 +39,6 @@ function getCords(url) {
                         var iconUrl = "http://openweathermap.org/img/w/" + weatherIcon + ".png";
                         $('#day'+[i]+'icon').attr('src', iconUrl)
                     }
-                    
                 })
         })
 }
@@ -48,22 +47,49 @@ $('#searchBtn').on('click', function() {
     inputCity = $('#cityInput').val()
     var geoUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=1&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
     getCords(geoUrl)
-    var btn = $('<button>', {class: 'btn btn-secondary my-2 w-100', id: inputCity})
-    btn.text(inputCity)
-    $('#history').append(btn)
-    localStorage.setItem(inputCity, inputCity)
-    $('#cityInput').val("")
+    if(previousCity.includes(inputCity)) {
+        return
+    } else {
+        previousCity.push(inputCity)
+        var number = previousCity.length - 1
+        var btn = $('<button>', {class: 'history'+number+' btn btn-secondary my-2 w-100', id: inputCity})
+        btn.text(inputCity)
+        $('#history').append(btn)
+        localStorage.setItem("History", JSON.stringify(previousCity))
+        $('#cityInput').val("")
+    }
+    
 })
 
 function init () {
-    for(i = 0; i < localStorage.length; i++) {
-        var btn = $('<button>', {class: 'btn btn-secondary my-2 w-100', id: inputCity})
-        btn.text(localStorage.getItem(i))
-        console.log
-        $('#history').append(btn)
+    var storedCities = JSON.parse(localStorage.getItem("History"));
+    
+    if (storedCities != null) {
+        previousCity = storedCities;
+    }
+
+    for(i = 0; i < previousCity.length; i++) {
+        var city = previousCity[i];
+
+        var btn = $('<button>', {class: 'history'+[i]+' btn btn-secondary my-2 w-100', id: city})
+        btn.text(city)
+        $('#history').append(btn)       
     }
 }
 
+function watchHistory() {
+    for(i = 0; i < previousCity.length; i++) {
+        $('.history'+[i]).on('click', function() {
+            inputCity = $(this).attr('id')
+            var geoUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=1&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
+            getCords(geoUrl)
+            if(previousCity.length = previousCity.length + 1){
+                return
+            }
+        })
+    }
+    return
+}
+
 init()
-
-
+watchHistory()
