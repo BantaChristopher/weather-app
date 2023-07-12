@@ -51,7 +51,19 @@ $('#searchBtn').on('click', function() {
     var btn = $('<button>', {class: 'btn btn-secondary my-2 w-100', id: inputCity})
     btn.text(inputCity)
     $('#history').append(btn)
+    localStorage.setItem(inputCity, inputCity)
     $('#cityInput').val("")
 })
+
+function init () {
+    for(i = 0; i < localStorage.length; i++) {
+        var btn = $('<button>', {class: 'btn btn-secondary my-2 w-100', id: inputCity})
+        btn.text(localStorage.getItem(i))
+        console.log
+        $('#history').append(btn)
+    }
+}
+
+init()
 
 
