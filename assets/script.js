@@ -29,14 +29,29 @@ function getCords(url) {
                     $('#cityTemp').text('Temperature: ' + data.current.temp + '℉')
                     $('#cityWind').text('Wind: ' + data.current.wind_speed + 'MPH')
                     $('#cityHumidity').text('Humidity: ' + data.current.humidity + '%')
+                    var forecastCards = $('.text-dark').length + 1
+                    for(i = 1; i < forecastCards; i++) {
+                        $('#day'+[i]+'Date').text(dayjs.unix(data.daily[i].dt).format('MM/DD/YYYY'))
+                        $('#day'+[i]+'Temp').text('Temperature: ' + data.daily[i].temp.day + '℉')
+                        $('#day'+[i]+'Wind').text('Wind: ' + data.daily[i].wind_speed + 'MPH')
+                        $('#day'+[i]+'Humid').text('Humidity: ' + data.daily[i].humidity + '%')
+                        var weatherIcon = data.daily[i].weather[0].icon;
+                        var iconUrl = "http://openweathermap.org/img/w/" + weatherIcon + ".png";
+                        $('#day'+[i]+'icon').attr('src', iconUrl)
+                    }
+                    
                 })
         })
 }
 
 $('#searchBtn').on('click', function() {
     inputCity = $('#cityInput').val()
-    var geoUrl = 'http://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=5&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
+    var geoUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=1&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
     getCords(geoUrl)
+    var btn = $('<button>', {class: 'btn btn-secondary my-2 w-100', id: inputCity})
+    btn.text(inputCity)
+    $('#history').append(btn)
+    $('#cityInput').val("")
 })
 
 
