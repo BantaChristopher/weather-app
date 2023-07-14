@@ -57,6 +57,11 @@ $('#searchBtn').on('click', function() {
         $('#history').append(btn)
         localStorage.setItem("History", JSON.stringify(previousCity))
         $('#cityInput').val("")
+        btn.on('click', function() {
+            inputCity = $(this).attr('id')
+            var geoUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=1&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
+            getCords(geoUrl)
+        })
     }
     
 })
@@ -83,9 +88,6 @@ function watchHistory() {
             inputCity = $(this).attr('id')
             var geoUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' + inputCity + '&limit=1&appid=fbbc0ff2ad4eb4bfe4580caab86f90b3'
             getCords(geoUrl)
-            if(previousCity.length = previousCity.length + 1){
-                return
-            }
         })
     }
     return
